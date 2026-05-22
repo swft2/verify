@@ -1,25 +1,28 @@
 <?php
 header('Content-Type: text/plain');
 
-// --- Bypass token (from environment variable) ---
-$expectedBypass = getenv('BYPASS_TOKEN');
-if (isset($_GET['bypass']) && $_GET['bypass'] === $expectedBypass) {
-    // token matches – proceed
-} else {
+// --- BYPASS TOKEN (must match the token in your C++ cheat) ---
+$expectedBypass = '22hsuadgh8adgauiydg8dygg7ag78dfg2yvngduyad';
+if (!isset($_GET['bypass']) || $_GET['bypass'] !== $expectedBypass) {
     die('ERROR');
 }
 
+// --- GET PARAMETERS ---
 $key = isset($_GET['key']) ? trim($_GET['key']) : '';
 if (empty($key)) die('ERROR');
 
-// Database credentials from environment variables
+// --- DATABASE CREDENTIALS (using environment variables is more secure) ---
+// --- DATABASE CREDENTIALS (ONLY from environment variables – no hardcoded secrets) ---
 $host = getenv('DB_HOST');
 $port = getenv('DB_PORT');
 $user = getenv('DB_USER');
 $pass = getenv('DB_PASS');
 $db   = getenv('DB_NAME');
 
-if (!$host || !$user || !$pass) die('ERROR');
+if (!$host || !$user || !$pass || !$db) {
+    die('ERROR'); // Missing environment variables
+}
+
 
 $conn = new mysqli($host, $user, $pass, $db, (int)$port);
 if ($conn->connect_error) die('ERROR');
